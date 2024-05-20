@@ -1,11 +1,11 @@
 ---
-title: "Proposal title"
+title: "The Great American Coffee Taste Test"
 subtitle: "Proposal"
 author: 
   - name: "Team Name"
     affiliations:
       - name: "School of Information, University of Arizona"
-description: "Project description"
+description: "A visualization of survey data collected from the great American coffee taste which was conduceted by James Hoffman and Cometeer."
 format:
   html:
     code-tools: true
@@ -59,9 +59,7 @@ coffee_survey <- read_csv("data/coffee_survey.csv", locale = readr::locale(encod
 glimpse(coffee_survey)
 ```
 
-A brief description of your dataset including its provenance, dimensions, etc. as well as the reason why you chose this dataset.
-
-Make sure to load the data and use inline code for some of this information.
+This data set was created from a partnership between James Hoffman and Cometeer. They sent four coffee samples to over 4,000 Americans and asked them to fill out this survey which asked them which coffee they liked the best from the samples, what their regular preference is, and what they typically spend on a cup of coffee. I chose this dataset as it is a survey which includes questions on demographics that can be used to categorize participants. Participants were not chosen randomly so parametric statisitcal tests can not be used to analyze this dataset, but it may still reveal interesting correlations.
 
 ```{r}
 #| echo: false

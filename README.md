@@ -1,4 +1,4 @@
-# project-final
+# The Great American Coffee Taste Test
 
 Final Project repo for INFO 526 - Summer 2024.
 

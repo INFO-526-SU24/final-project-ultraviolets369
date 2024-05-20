@@ -1,11 +1,11 @@
 ---
-title: "Project Title"
+title: "The Great American Coffee Taste Test"
 subtitle: "INFO 526 - Summer 2024 - Final Project"
 author: 
-  - name: "Team name"
+  - name: Violeta Keifer
     affiliations:
       - name: "School of Information, University of Arizona"
-description: "Project description"
+description: "A visualization of survey data collected from the great American coffee taste which was conduceted by James Hoffman and Cometeer."
 format:
    html:
     code-tools: true
