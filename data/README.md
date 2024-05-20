@@ -1,7 +1,8 @@
 # Data
--   **[Dataset]**: Description of the dataset 
 
-# Codebook for [chosen] Dataset
+-   **\[Dataset\]**: Description of the dataset
+
+# Codebook for \[chosen\] Dataset
 
 ## Variable Names and Descriptions:
 
@@ -10,6 +11,3 @@
 ## Data Types:
 
 -   **Column**: data type
-
-
-

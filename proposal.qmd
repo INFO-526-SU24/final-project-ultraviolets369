@@ -21,19 +21,53 @@ execute:
 ```{r}
 #| label: load-pkgs
 #| message: false
+#| echo: false
 library(tidyverse)
+library(readr)
+library(janitor)
+library(here)
+library(fs)
+library(knitr)
 ```
 
 ## Dataset
 
 ```{r}
-#| label: load-dataset
+#| label: load-dataset-coffee_survey
 #| message: false
+#| echo: false
+#| #load data from coffee_survey csv file
+
+
+locale=locale(encoding="latin1") #https://stackoverflow.com/questions/71532975/trying-to-read-csv-file-says-error-in-ncharx-width-invalid-multibyte-s
+
+coffee_survey <- read_csv("data/coffee_survey.csv", locale = readr::locale(encoding = "latin1"))
+
+#https://forum.posit.co/t/unable-to-import-hotel-bookings-dataset-to-rstudio/166402
+
+```
+
+```{}
+```
+
+```{r glimpse_data}
+
+#| label: glimpse-dataset-coffee_survey
+#| message: false
+#| echo: false
+
+glimpse(coffee_survey)
 ```
 
 A brief description of your dataset including its provenance, dimensions, etc. as well as the reason why you chose this dataset.
 
 Make sure to load the data and use inline code for some of this information.
+
+```{r}
+#| echo: false
+
+dim(coffee_survey)
+```
 
 ## Questions
 
