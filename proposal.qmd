@@ -2,10 +2,10 @@
 title: "The Great American Coffee Taste Test"
 subtitle: "Proposal"
 author: 
-  - name: "Team Name"
+  - name: "Violeta Keifer"
     affiliations:
       - name: "School of Information, University of Arizona"
-description: "A visualization of survey data collected from the great American coffee taste which was conduceted by James Hoffman and Cometeer."
+description: "A visualization of survey data collected from the great American coffee taste which was conducted by James Hoffman and Cometeer."
 format:
   html:
     code-tools: true
@@ -32,7 +32,7 @@ library(knitr)
 
 ## Dataset
 
-```{r}
+```{r load coff_survey dataset, include=FALSE}
 #| label: load-dataset-coffee_survey
 #| message: false
 #| echo: false
@@ -42,35 +42,28 @@ library(knitr)
 locale=locale(encoding="latin1") #https://stackoverflow.com/questions/71532975/trying-to-read-csv-file-says-error-in-ncharx-width-invalid-multibyte-s
 
 coffee_survey <- read_csv("data/coffee_survey.csv", locale = readr::locale(encoding = "latin1"))
-
 #https://forum.posit.co/t/unable-to-import-hotel-bookings-dataset-to-rstudio/166402
 
 ```
 
-```{}
+```         
 ```
 
-```{r glimpse_data}
-
-#| label: glimpse-dataset-coffee_survey
-#| message: false
-#| echo: false
+```{r glimpse_data, include=FALSE}
 
 glimpse(coffee_survey)
 ```
 
-This data set was created from a partnership between James Hoffman and Cometeer. They sent four coffee samples to over 4,000 Americans and asked them to fill out this survey which asked them which coffee they liked the best from the samples, what their regular preference is, and what they typically spend on a cup of coffee. I chose this dataset as it is a survey which includes questions on demographics that can be used to categorize participants. Participants were not chosen randomly so parametric statisitcal tests can not be used to analyze this dataset, but it may still reveal interesting correlations.
+This data set was created from a partnership between James Hoffman and Cometeer. They sent four coffee samples to over 4,000 Americans and asked them to fill out this survey which asked them which coffee they liked the best from the samples, what their regular preference is, and what they typically spend on a cup of coffee. I chose this dataset as it includes many possible variables to analyze, including demographics for respondents. Participants were not chosen randomly so parametric statisitcal tests can not be used to analyze this dataset, but it may still reveal interesting correlations between variables. More information about the survey can be found [here.](https://cometeer.com/pages/the-great-american-coffee-taste-test?utm_source=google&utm_medium=paid-search&utm_campaign=PMax|Brand|US&utm_term=&utm_content=&gad_source=1&gclid=Cj0KCQjwmMayBhDuARIsAM9HM8cGTK7xXEIM7blKzNjvdJvSO3naRo3OW4lFtnvNYls0c46kFHsUQ_AaAoEREALw_wcB)
 
-```{r}
-#| echo: false
+## Question
 
-dim(coffee_survey)
-```
-
-## Questions
-
-The two questions you want to answer.
+Did people's stated coffee preference align with their preferred coffee from the taste test?
 
 ## Analysis plan
 
--   A plan for answering each of the questions including the variables involved, variables to be created (if any), external data to be merged in (if any).
+-   The goal is to create a heat map with stated coffee presence vs the taste test coffee to see if stated preference is related to tested preference. I will use the variables roast_level and prefer_overall.
+-   A second visualization could be created to plot ratings of bitterness, acidity, and personal preference for each coffee sampled. This would look like a bar chart faceted by each type of rating.
+    -   Before these two plots can be created can be achieved, column names will be renamed by with the shortened names in the github repository where this dataset was stored. Blank spots will be left blank.
+    -   There were more coffee choices in the stated preference list than actually used in the taste test, so they will need to be grouped together so that there is a similar number of categories for the heatmap. Possible categories are light, medium, and dark roast.
+    -   Another issue with this dataset is that the number of responses for each question varies as participants did not answer every question on the survey. I will need to determine n for each variable and remove respondents that did not answer the questions in the survey related to my variables.
