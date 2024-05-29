@@ -16,54 +16,158 @@ editor: visual
 code-annotations: hover
 execute:
   warning: false
+  echo: false
+  message: false
 ---
 
-```{r}
-#| label: load-pkgs
-#| message: false
-#| echo: false
-library(tidyverse)
-library(readr)
-library(janitor)
-library(here)
-library(fs)
-library(knitr)
+```{r install packages and set theme}
+
+#install packages into r
+if(!require("pacman"))
+  install.packages("pacman")
+
+pacman::p_load(tidyverse, 
+               glue, 
+               scales,
+               here,
+               ggthemes,
+               janitor,
+               ggplot2,
+               readr,
+              )
+
+# set theme for ggplot2
+ggplot2::theme_set(ggplot2::theme_minimal(base_size = 14))
 ```
 
 ## Dataset
 
-```{r load coff_survey dataset, include=FALSE}
+```{r load coff_survey dataset}
 #| label: load-dataset-coffee_survey
-#| message: false
-#| echo: false
 #| #load data from coffee_survey csv file
 
 
 locale=locale(encoding="latin1") #https://stackoverflow.com/questions/71532975/trying-to-read-csv-file-says-error-in-ncharx-width-invalid-multibyte-s
 
-coffee_survey <- read_csv("data/coffee_survey.csv", locale = readr::locale(encoding = "latin1"))
-#https://forum.posit.co/t/unable-to-import-hotel-bookings-dataset-to-rstudio/166402
+coffee_survey_raw <- read_csv(here::here("data/coffee_survey.csv"), locale = readr::locale(encoding = "latin1"))
+
 
 ```
 
-```         
+```{r tidy column names}
+
+
+coffee_survey <- coffee_survey_raw |> 
+  janitor::clean_names() |> 
+  # Get rid of one-hot encoding; users can do that if they'd like. Also,
+  # "flavorings" columns are empty.
+  dplyr::select(
+    submission_id,
+    age = what_is_your_age,
+    cups = how_many_cups_of_coffee_do_you_typically_drink_per_day,
+    where_drink = where_do_you_typically_drink_coffee,
+    brew = how_do_you_brew_coffee_at_home,
+    brew_other = how_else_do_you_brew_coffee_at_home,
+    purchase = on_the_go_where_do_you_typically_purchase_coffee,
+    purchase_other = where_else_do_you_purchase_coffee,
+    favorite = what_is_your_favorite_coffee_drink,
+    favorite_specify = please_specify_what_your_favorite_coffee_drink_is,
+    additions = do_you_usually_add_anything_to_your_coffee,
+    additions_other = what_else_do_you_add_to_your_coffee,
+    dairy = what_kind_of_dairy_do_you_add,
+    sweetener = what_kind_of_sugar_or_sweetener_do_you_add,
+    style = before_todays_tasting_which_of_the_following_best_described_what_kind_of_coffee_you_like,
+    strength = how_strong_do_you_like_your_coffee,
+    roast_level = what_roast_level_of_coffee_do_you_prefer,
+    caffeine = how_much_caffeine_do_you_like_in_your_coffee,
+    expertise = lastly_how_would_you_rate_your_own_coffee_expertise,
+    starts_with("coffee"),
+    prefer_abc = between_coffee_a_coffee_b_and_coffee_c_which_did_you_prefer,
+    prefer_ad = between_coffee_a_and_coffee_d_which_did_you_prefer,
+    prefer_overall = lastly_what_was_your_favorite_overall_coffee,
+    wfh = do_you_work_from_home_or_in_person,
+    total_spend = in_total_much_money_do_you_typically_spend_on_coffee_in_a_month,
+    why_drink = why_do_you_drink_coffee,
+    why_drink_other = other_reason_for_drinking_coffee,
+    taste = do_you_like_the_taste_of_coffee,
+    know_source = do_you_know_where_your_coffee_comes_from,
+    most_paid = what_is_the_most_youve_ever_paid_for_a_cup_of_coffee,
+    most_willing = what_is_the_most_youd_ever_be_willing_to_pay_for_a_cup_of_coffee,
+    value_cafe = do_you_feel_like_you_re_getting_good_value_for_your_money_when_you_buy_coffee_at_a_cafe,
+    spent_equipment = approximately_how_much_have_you_spent_on_coffee_equipment_in_the_past_5_years,
+    value_equipment = do_you_feel_like_you_re_getting_good_value_for_your_money_with_regards_to_your_coffee_equipment,
+    gender,
+    gender_specify = gender_please_specify,
+    education_level,
+    ethnicity_race,
+    ethnicity_race_specify = ethnicity_race_please_specify,
+    employment_status,
+    number_children = number_of_children,
+    political_affiliation
+  )
+
 ```
 
-```{r glimpse_data, include=FALSE}
+This data set was created from a partnership between James Hoffman and Cometeer. They sent four coffee samples to over 4,000 Americans and asked them to fill out this survey which asked them which coffee they liked the best from the samples, what their regular preference is, and what they typically spend on a cup of coffee. I chose this data set as it includes many possible variables to analyze, including demographics for respondents. The original survey can be viewed [here.](https://cometeer.com/pages/the-great-american-coffee-taste-test?utm_source=google&utm_medium=paid-search&utm_campaign=PMax%7CBrand%7CUS&utm_term=&utm_content=&gad_source=1&gclid=Cj0KCQjwmMayBhDuARIsAM9HM8cGTK7xXEIM7blKzNjvdJvSO3naRo3OW4lFtnvNYls0c46kFHsUQ_AaAoEREALw_wcB)
 
-glimpse(coffee_survey)
+To begin exploring the data, the raw file was loaded and the data was tidied up using janitor and the suggested column titles from the Tidy Tuesday page.
+
+The survey had 48 questions and produced a data set with 4,042 responses.
+
+```{r dimensions, include = TRUE}
+
+dim(coffee_survey)
 ```
 
-This data set was created from a partnership between James Hoffman and Cometeer. They sent four coffee samples to over 4,000 Americans and asked them to fill out this survey which asked them which coffee they liked the best from the samples, what their regular preference is, and what they typically spend on a cup of coffee. I chose this dataset as it includes many possible variables to analyze, including demographics for respondents. Participants were not chosen randomly so parametric statisitcal tests can not be used to analyze this dataset, but it may still reveal interesting correlations between variables. More information about the survey can be found [here.](https://cometeer.com/pages/the-great-american-coffee-taste-test?utm_source=google&utm_medium=paid-search&utm_campaign=PMax|Brand|US&utm_term=&utm_content=&gad_source=1&gclid=Cj0KCQjwmMayBhDuARIsAM9HM8cGTK7xXEIM7blKzNjvdJvSO3naRo3OW4lFtnvNYls0c46kFHsUQ_AaAoEREALw_wcB)
+Nearly half of the responses were from people who were 25 to 34 years old.
+
+```{r demographic exploration, fig.width = 10}
+
+coffee_survey |>
+  filter(!is.na(age)) |>
+  ggplot(aes(x = age)) +
+  geom_bar() +
+  labs(x = "Age",
+       y = "Frequency",
+       title = "Ages of Coffee Survey Participants")
+
+
+  
+```
+
+Over half of the participants were White/Caucasian. The next greatest group chose not to answer this question.
+
+```{r bar graph of race and ethnicity, fig.width = 15}
+
+coffee_survey |>
+  ggplot(aes(x = ethnicity_race)) +
+  geom_bar() +
+  labs(x = "Race/Ethnicity",
+       y = "Frequency",
+       title = "Race and Ethnicity of Coffee Survey Participants")
+  
+```
+
+Over half of the participants were male.
+
+```{r gender, fig.width = 10}
+coffee_survey |>
+  ggplot(aes(x = gender)) +
+  geom_bar() +
+  labs(x = "Gender",
+       y = "Frequency",
+       title = "Gender of Coffee Survey Participants")
+```
 
 ## Question
 
-Did people's stated coffee preference align with their preferred coffee from the taste test?
+How often did people's stated coffee preference align with their preferred coffee from the taste test?
 
-## Analysis plan
+How did bitterness, acidity, and personal preference vary for each coffee sample and did this vary by age?
 
--   The goal is to create a heat map with stated coffee presence vs the taste test coffee to see if stated preference is related to tested preference. I will use the variables roast_level and prefer_overall.
--   A second visualization could be created to plot ratings of bitterness, acidity, and personal preference for each coffee sampled. This would look like a bar chart faceted by each type of rating.
-    -   Before these two plots can be created can be achieved, column names will be renamed by with the shortened names in the github repository where this dataset was stored. Blank spots will be left blank.
+## Analysis Plan
+
+-   The first goal is to create a heat map with stated coffee presence vs the taste test coffee to see if stated preference is related to tested preference. I will use the variables roast_level and prefer_overall.
+-   A second visualization would be a grouped bar chart for ratings of bitterness, acidity, and personal preference for each coffee sampled. This would look like a bar chart faceted by each type of rating and grouped by age.
     -   There were more coffee choices in the stated preference list than actually used in the taste test, so they will need to be grouped together so that there is a similar number of categories for the heatmap. Possible categories are light, medium, and dark roast.
-    -   Another issue with this dataset is that the number of responses for each question varies as participants did not answer every question on the survey. I will need to determine n for each variable and remove respondents that did not answer the questions in the survey related to my variables.
+    -   Another issue with this data set is that the number of responses for each question varies as participants did not answer every question on the survey. I will need to determine n for each variable and remove respondents that did not answer the questions in the survey related to my variables.
