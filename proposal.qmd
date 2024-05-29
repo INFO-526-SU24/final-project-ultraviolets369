@@ -171,3 +171,14 @@ How did bitterness, acidity, and personal preference vary for each coffee sample
 -   A second visualization would be a grouped bar chart for ratings of bitterness, acidity, and personal preference for each coffee sampled. This would look like a bar chart faceted by each type of rating and grouped by age.
     -   There were more coffee choices in the stated preference list than actually used in the taste test, so they will need to be grouped together so that there is a similar number of categories for the heatmap. Possible categories are light, medium, and dark roast.
     -   Another issue with this data set is that the number of responses for each question varies as participants did not answer every question on the survey. I will need to determine n for each variable and remove respondents that did not answer the questions in the survey related to my variables.
+
+## Task Checker
+
+| Task Name      | Status | Due     | Priority | Summary                           |
+|:-----------|:-----------|:-----------|:-----------|:-------------------------|
+| Upload Data    | Done   | 5/22/24 | High     | Uploaded and tidied coffee_survey |
+| Explore Data   | Done   | 5/29/24 | Medium   | Explore demographics of survey    |
+| Proposal       | Done   | 5/29/24 | High     | Finish survey and publish site    |
+| Peer Proposal  |        | 6/3/24  | High     | Make adjustments based on peers   |
+| Final Proposal |        | 6/10/24 | Medium   | Make adjustments from feedback    |
+| Presentation   |        | 6/24/24 | High     | Make presentation                 |
