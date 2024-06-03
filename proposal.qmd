@@ -108,7 +108,7 @@ coffee_survey <- coffee_survey_raw |>
 
 ```
 
-This data set was created from a partnership between James Hoffman and Cometeer. They sent four coffee samples to over 4,000 Americans and asked them to fill out this survey which asked them which coffee they liked the best from the samples, what their regular preference is, and what they typically spend on a cup of coffee. I chose this data set as it includes many possible variables to analyze, including demographics for respondents. The original survey can be viewed [here.](https://cometeer.com/pages/the-great-american-coffee-taste-test?utm_source=google&utm_medium=paid-search&utm_campaign=PMax%7CBrand%7CUS&utm_term=&utm_content=&gad_source=1&gclid=Cj0KCQjwmMayBhDuARIsAM9HM8cGTK7xXEIM7blKzNjvdJvSO3naRo3OW4lFtnvNYls0c46kFHsUQ_AaAoEREALw_wcB) This project will examine the impact of age and gender on participants ratings of acidity, bitterness, and preference for the four sampled coffees.
+This data set was created from a partnership between James Hoffman and Cometeer. They sent four coffee samples to over 4,000 Americans and asked them to fill out this survey which asked them which coffee they liked the best from the samples, what their regular preference is, and what they typically spend on a cup of coffee. I chose this data set as it includes many possible variables to analyze, including demographics for respondents. The original survey can be viewed [here.](https://cometeer.com/pages/the-great-american-coffee-taste-test?utm_source=google&utm_medium=paid-search&utm_campaign=PMax%7CBrand%7CUS&utm_term=&utm_content=&gad_source=1&gclid=Cj0KCQjwmMayBhDuARIsAM9HM8cGTK7xXEIM7blKzNjvdJvSO3naRo3OW4lFtnvNYls0c46kFHsUQ_AaAoEREALw_wcB) This project will examine the impact of age and on participants ratings of acidity, bitterness, and preference for the four sampled coffees.
 
 To begin exploring the data, the raw file was loaded and the data was tidied up using janitor and the suggested column titles from the Tidy Tuesday page.
 
@@ -119,7 +119,7 @@ The survey had 48 questions and produced a data set with 4,042 responses.
 dim(coffee_survey)
 ```
 
-Nearly half of the responses were from people who were 25 to 34 years old. A quarter of participants were aged 34 to 44 years old. The distribution of ages is skewed to the left with very few participants under 18 years old.
+Nearly half of the responses were from people who were aged 25 to 34 years old. A quarter of participants were aged 34 to 44 years old. The distribution of ages is skewed to the left with very few participants under 18 years old.
 
 ```{r demographic exploration, fig.width = 10}
 
