@@ -124,20 +124,28 @@ coffee_survey <- coffee_survey_raw |>
 glimpse(coffee_survey)
 ```
 
-This data set was created from a partnership between James Hoffman and Cometeer. They sent four coffee samples to over 4,000 Americans and asked them to fill out this survey which asked them which coffee they liked the best from the samples, what their regular preference is, and what they typically spend on a cup of coffee. I chose this data set as it includes many possible variables to analyze, including demographics for respondents. The original survey can be viewed [here.](https://cometeer.com/pages/the-great-american-coffee-taste-test?utm_source=google&utm_medium=paid-search&utm_campaign=PMax%7CBrand%7CUS&utm_term=&utm_content=&gad_source=1&gclid=Cj0KCQjwmMayBhDuARIsAM9HM8cGTK7xXEIM7blKzNjvdJvSO3naRo3OW4lFtnvNYls0c46kFHsUQ_AaAoEREALw_wcB) This project will examine the impact of age and on participants ratings of acidity, bitterness, and preference for the four sampled coffees.
+This data set was created from a partnership between James Hoffman and Cometeer. They sent four coffee samples to over 4,000 Americans and asked them to fill out this survey which asked them which coffee they liked the best from the samples, what their regular preference is, and what they typically spend on a cup of coffee. I chose this data set as it includes many possible variables to analyze, including demographics for respondents. The original survey can be viewed [here.](https://cometeer.com/pages/the-great-american-coffee-taste-test?utm_source=google&utm_medium=paid-search&utm_campaign=PMax%7CBrand%7CUS&utm_term=&utm_content=&gad_source=1&gclid=Cj0KCQjwmMayBhDuARIsAM9HM8cGTK7xXEIM7blKzNjvdJvSO3naRo3OW4lFtnvNYls0c46kFHsUQ_AaAoEREALw_wcB) This project will examine the impact of age on participants ratings of acidity, bitterness, and preference for the four sampled coffees.
 
 To begin exploring the data, the raw file was loaded and the data was tidied up using janitor and the suggested column titles from the Tidy Tuesday page.
 
-The survey had 48 questions and produced a data set with 4,042 responses.
+The survey had 48 questions and 4,042 participants responded. Participants were not required to answer all questions before submitting the survey.
 
 ```{r dimensions, include = TRUE}
 
 dim(coffee_survey)
 ```
 
-Nearly half of the responses were from people who were aged 25 to 34 years old. A quarter of participants were aged 34 to 44 years old. The distribution of ages is skewed to the left with very few participants under 18 years old.
+When grouped by age, nearly half (49%) of the responses were from people who were aged 25 to 34 years old. 24% were aged 35 to 44 years old. The distribution of ages is skewed to the left with very few (0.5%) under 18 years old. 
+```{r}
+coffee_survey |>
+  group_by(age) |>
+  summarize(Freq = n()) 
 
-```{r demographic exploration, fig.width = 10}
+glimpse(coffee_survey)
+
+```
+
+```{r age exploration, fig.width = 10}
 
 coffee_survey |>
   filter(!is.na(age)) |>
@@ -151,16 +159,17 @@ coffee_survey |>
   
 ```
 
+
 ## Question
 
 How did bitterness, acidity, and personal preference vary for each coffee sample according to the age of participants?
 
 ## Analysis Plan
 
--   The first visualization will examine the impact of age on coffee preference. This will be a stacked bar chart with age on the y-axis and frequency on the x-axis. The stacked bars will each correspond to one of the four coffee samples.
--   The second visualization will show how each age group rated the acidity and bitterness of each of the four coffee samples. This will be a grouped bar chart with age on the y-axis and frequency on the x-axis. Each bar in the groups will correspond to one of the four cofee samples.
-    -   An issue that will be need to be addressed is that the number of responses for each question varies as participants did not answer every question on the survey. The number of participants for each variable will need to be deteremined and participants may need to be removed if they did not answer questions related to the four variables of age, bitterness, acidity, and overall preference.
-    -   Some age groups also got considerably less responses than other groups such as the \<18 years old group. This group may be excluded in the final analysis.
+-   The first visualization will examine the impact of age on coffee preference. This will be a stacked proportional bar chart with age on the y-axis and frequency on the x-axis. The stacked bars will each correspond to one of the four coffee samples.
+-   The second visualization will show how each age group rated the acidity and bitterness of each of the four coffee samples. This will be a grouped bar chart with age on the y-axis and frequency on the x-axis. Each bar in the groups will correspond to one of the four coffee samples. This will be facet-wrapped by the explantory variable so it is easy to compare the mean of each response between age groups.
+    -   An issue that will be need to be addressed is that the number of responses for each question varies as participants did not answer every question on the survey. The number of participants for each variable will need to be determined and participants may need to be removed if they did not answer questions related to the four variables of age, bitterness, acidity, and overall preference.
+    -   Some age groups also got considerably less responses than other groups such as the <18 years old group. This group may be excluded in the final analysis.
 
 ## Task Checker
 

@@ -17,6 +17,196 @@ execute:
   echo: false
 ---
 
+```{r install packages and set theme}
+
+#install packages into r
+if(!require("pacman"))
+  install.packages("pacman")
+
+pacman::p_load(tidyverse, 
+               glue, 
+               scales,
+               ggthemes,
+               forcats,
+               rsconnect,
+               shiny,
+               jpeg,
+               ggpubr,
+               png,
+               gt,
+               dplyr,
+               viridis,
+               patchwork,
+               here,
+               ggridges,
+               colorspace,
+               stringr,
+               ggstats,
+               dsbox,
+               janitor,
+               openintro,
+               ggrepel,
+               patchwork,
+               readr)
+
+# set theme for ggplot2
+ggplot2::theme_set(ggplot2::theme_minimal(base_size = 14))
+```
+
+## Goals
+
+-   Introduction: The introduction provides a clear explanation of the question and the dataset used to answer the question, including a description of all relevant variables in the dataset. (3 points)
+
+-   Justification of approach: The chosen approach and visualizations are clearly explained and justified. (3 points)
+
+-   Code: Code is correct, easy to read, properly formatted, and properly documented. (10 points)
+
+-   Visualization: The visualizations are appropriate, easy to read, and properly labeled. (10 points)
+
+-   Discussion: Discussion of results is clear and correct, and it has some depth without begin excessively long. (4 points)
+
 ## Abstract
 
-Add project abstract here.
+## Introduction
+
+This data set was created from a partnership between James Hoffman and Cometeer. They sent four coffee samples to over 4,000 Americans and asked them to fill out this survey which asked them which coffee they liked the best from the samples, what their regular preference is, and what they typically spend on a cup of coffee. I chose this data set as it includes many possible variables to analyze, including demographics for respondents. The original survey can be viewed [here.](https://cometeer.com/pages/the-great-american-coffee-taste-test?utm_source=google&utm_medium=paid-search&utm_campaign=PMax%7CBrand%7CUS&utm_term=&utm_content=&gad_source=1&gclid=Cj0KCQjwmMayBhDuARIsAM9HM8cGTK7xXEIM7blKzNjvdJvSO3naRo3OW4lFtnvNYls0c46kFHsUQ_AaAoEREALw_wcB) The variables of interest are participants rating of the acidity, bitterness, and preference for the four sampled coffees as well as overall preference. What were each kind of coffee used.
+
+The survey had 48 questions and 4,042 participants responded. Participants were not required to answer all questions before submitting the survey. When grouped by age, nearly half (49%) of the responses were from people who were aged 25 to 34 years old. 24% were aged 35 to 44 years old. The distribution of ages is skewed to the left with very few (0.5%) under 18 years old. 31 participants did not include their age in the survey so they were excluded from the final data set. Other exclusions in the final plots included the under 18 category due to the low frequency of responses and those who did not respond to all of the questions of interest including rating coffee A, B, C, and D for bitterness, acidity, personal preference, and overall preference. This left a sample size of 3,697 for final analysis.
+
+```{r}
+coffee_survey |>
+  group_by(age) |>
+  summarize(Freq = n()) 
+
+```
+
+```{r age exploration, fig.width = 10}
+
+coffee_survey |>
+  filter(!is.na(age)) |>
+  ggplot(aes(x = fct_relevel(age, c("<18 years old", "18-24 years old", "25-34 years old", "35-44 years old", "45-54 years old", "55-64 years old", ">65 years old")))) +
+  geom_bar(fill = "brown") +
+  labs(x = "Age",
+       y = "Frequency",
+       title = "Ages of Coffee Survey Participants")
+
+
+  
+```
+
+```{r}
+
+coffee_survey_preference <- coffee_survey |>
+  select(submission_id, age, coffee_a_acidity, coffee_a_bitterness, coffee_a_personal_preference, coffee_b_acidity, coffee_b_bitterness, coffee_b_personal_preference, coffee_c_acidity, coffee_c_bitterness, coffee_c_personal_preference, coffee_d_acidity, coffee_d_bitterness, coffee_d_personal_preference, prefer_overall)|>
+  na.omit() |>
+  filter(age != "<18 years old")
+
+coffee_survey_preference |>
+  group_by(age) |>
+  summarize(Freq = n()) 
+
+dim(coffee_survey_preference)
+
+glimpse(coffee_survey_preference)
+
+```
+
+```{r , fig.width = 10}
+
+coffee_survey_preference |>
+  ggplot(aes(x = fct_relevel(age, c("18-24 years old", "25-34 years old", "35-44 years old", "45-54 years old", "55-64 years old", ">65 years old")))) +
+  geom_bar(fill = "brown") +
+  labs(x = "Age",
+       y = "Frequency",
+       title = "Ages of Coffee Survey Participants after Excluding NA Values and Particpants Under 18")
+```
+
+After the dataset was cleaned up and groups were excluded based on the criteria above, summary statistics on the remaining responses showed that Coffee D was the overall favorite choice at 37%. Coffees A (22%), B (21%), and C (21%) all scored very similarly to each other. Summary stats for the responses of interest regarding coffee acidity, bitterness, and personal preference revealed that
+
+```{r}
+
+prop.table(table(coffee_survey_preference$prefer_overall))
+
+```
+
+```{r}
+
+coffee_survey_preference |>
+  ggplot(aes(x = prefer_overall)) +
+  geom_bar(fill = "brown") +
+  labs(x = "Coffee Preference",
+       y = "Frequency",
+       title = "Overall Coffee Preference")
+
+```
+
+```{r}
+summary_coffee_survey_preference <- coffee_survey_preference |>
+  summary()
+
+print(summary_coffee_survey_preference)
+```
+
+# Question 1: How did bitterness, acidity, and overall preference vary for each coffee sample by age?
+
+## Introduction
+
+## Approach
+
+## Analysis
+
+```{r}
+
+longer_coffee_survey_preference <- coffee_survey_preference |>
+  pivot_longer(
+    cols = c(coffee_a_acidity, coffee_a_bitterness, coffee_a_personal_preference, coffee_b_acidity, coffee_b_bitterness, coffee_b_personal_preference, coffee_c_acidity, coffee_c_bitterness, coffee_c_personal_preference, coffee_d_acidity, coffee_d_bitterness, coffee_d_personal_preference),
+    names_to = "explanatory",
+    values_to = "explanatory_value"
+  )
+
+longer_coffee_survey_preference$coffee_type <- rep(c("A", "A", "A", "B", "B", "B", "C", "C", "C", "D", "D", "D"), times = 3690)
+
+longer_coffee_survey_preference$explanatory_type <- rep(c("Acidity", "Bitterness", "Personal Preference"), times = 14760)
+
+glimpse(longer_coffee_survey_preference)
+```
+
+```{r, fig.width = 10, fig.height = 5}
+longer_coffee_survey_preference|>
+  mutate(age =  fct_relevel(age, c("18-24 years old", "25-34 years old", "35-44 years old", "45-54 years old", "55-64 years old", ">65 years old"))) |>
+  group_by(age, coffee_type, explanatory_type) |> 
+  mutate(avg_score = ave(explanatory_value), sd_score = sd(explanatory_value)) |>
+  ggplot(aes(fill = factor(age), x = coffee_type, y = avg_score)) +
+  geom_bar(position = position_dodge(), stat = "identity", color = "black", width = 1) + 
+  geom_errorbar(aes(ymin = avg_score - sd_score, ymax = avg_score + sd_score), width = 0.2, position = position_dodge(1)) + 
+  facet_wrap(~explanatory_type) + 
+  labs( x = "Coffee Type", 
+        y = "Average Score",
+        fill = "Age",
+        title = "Average Scores for Four Types of Coffee",
+        caption = "Source: The Great American Coffee Taste Test by James Hoffman and Cometeer"
+  ) +
+  scale_fill_brewer()
+```
+
+```{r prop bar chart, fig.width = 10}
+
+coffee_survey_preference |>
+  mutate(age =  fct_relevel(age, c("18-24 years old", "25-34 years old", "35-44 years old", "45-54 years old", "55-64 years old", ">65 years old"))) |>
+  group_by(age, prefer_overall) |>
+  summarise(n = n()) |>
+  mutate(freq = n / sum(n)) |>
+  ggplot(aes(x = age, weight = freq, fill = prefer_overall, by = age)) +
+  scale_y_continuous(labels = scales::percent) +
+  geom_bar(position = "fill", color = "black") +
+  labs(x = "Age", 
+       y = "Proportion", 
+       title = "Overall Coffee Preference by Age",
+       fill = "Coffee Type",
+       caption = "Source: The Great American Coffee Taste Test by James Hoffman and Cometeer"
+  ) +
+  geom_text(stat = "prop", position = position_fill(.5)) +
+  scale_fill_brewer()
+```
+
+## Discussion
