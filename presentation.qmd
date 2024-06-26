@@ -222,7 +222,7 @@ coffee_survey_preference |>
 
 ## Analysis
 
-```{r, fig.width = 10, fig.height = 5}
+```{r stacked bar graph, fig.width = 10, fig.height = 5}
 longer_coffee_survey_preference|>
   mutate(age =  fct_relevel(age, c("18-24 years old", "25-34 years old", "35-44 years old", "45-54 years old", "55-64 years old", ">65 years old"))) |>
   group_by(age, coffee_type, explanatory_type) |> 

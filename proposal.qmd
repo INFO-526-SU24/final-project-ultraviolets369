@@ -135,7 +135,7 @@ The survey had 48 questions and 4,042 participants responded. Participants were 
 dim(coffee_survey)
 ```
 
-When grouped by age, nearly half (49%) of the responses were from people who were aged 25 to 34 years old. 24% were aged 35 to 44 years old. The distribution of ages is skewed to the left with very few (0.5%) under 18 years old.
+When grouped by age, nearly half (49%) of the responses were from people who were aged 25 to 34 years old. 24% were aged 35 to 44 years old. The distribution of ages is skewed to the right with very few (0.5%) under 18 years old.
 
 ```{r}
 coffee_survey |>
