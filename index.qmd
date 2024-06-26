@@ -118,31 +118,19 @@ coffee_survey <- coffee_survey_raw |>
 
 ```
 
-## Goals
-
--   Introduction: The introduction provides a clear explanation of the question and the dataset used to answer the question, including a description of all relevant variables in the dataset. (3 points)
-
--   Justification of approach: The chosen approach and visualizations are clearly explained and justified. (3 points)
-
--   Code: Code is correct, easy to read, properly formatted, and properly documented. (10 points)
-
--   Visualization: The visualizations are appropriate, easy to read, and properly labeled. (10 points)
-
--   Discussion: Discussion of results is clear and correct, and it has some depth without begin excessively long. (4 points)
-
 ## Abstract
 
 The Great American Coffee Taste Test was conducted in 2023 by James Hoffman and Cometeer, a coffee company. They sent out 4 frozen capsules of coffee which included a light, medium, and dark roast Kenyan coffee along with a Columbian coffee. Participants were asked to prepare each sample and answer a 48 question survey about their coffee preference along with demographic questions such as race, political party, age, and income. The data for this project included 4,042 response from this survey. This project examined the effect of age on questions which asked participants to rate the acidity, bitterness, and preference for each of the four coffees. It also examined the effect of age on overall preference.
 
-The data was tidied by renaming columns, removing age bins that had under 20 responses, and removing NA values for the variables of interest which left a sample size of 3,697. From analyzing the data, it was clear that coffee D was chosen as most preferred out of the four coffees at 37%. From looking at the distribution of age, 50% of responses came from people who were 25 to 34 years old and the data was skewed to the right. When responses were sorted by age, younger people under 54 years old most preferred coffee D while those who were 55 64 preferred coffee C and those greater than 65 preferred coffee B.
+The data was tidied by renaming columns, removing age bins that had under 20 responses, and removing NA values for the variables of interest which left a sample size of 3,697. From analyzing the data, it was clear that coffee D was chosen as most preferred out of the four coffees at 37%. Coffee D had the highest rating for coffee choice overall. When broken down by age group, coffee D was most popular among younger age groups including those who were 18 to 54 years old. Coffee C was most popular at 28.3% for people who are 55 to 64 years old and coffee D was most popular at 28% for the greater than 65 age group. Acidity and bitterness were generally rated higher among younger age groups. Personal preference was even across coffees A through C while D had a clear divide by age with younger people preferring it to older people.
 
 ## Introduction
 
 This data set was created from a partnership between James Hoffman and Cometeer. They sent four coffee samples to over 4,000 Americans and asked them to fill out this survey which asked them which coffee they liked the best from the samples, what their regular preference is, and what they typically spend on a cup of coffee along with demographic information. The original survey can be viewed [here.](https://cometeer.com/pages/the-great-american-coffee-taste-test?utm_source=google&utm_medium=paid-search&utm_campaign=PMax%7CBrand%7CUS&utm_term=&utm_content=&gad_source=1&gclid=Cj0KCQjwmMayBhDuARIsAM9HM8cGTK7xXEIM7blKzNjvdJvSO3naRo3OW4lFtnvNYls0c46kFHsUQ_AaAoEREALw_wcB) The variables of interest are participants rating of the acidity, bitterness, and preference for the four sampled coffees as well as overall preference. The four coffees chosen were a light, medium, and dark roast Kenyan coffee as well as a Columbian coffee.
 
-The survey had 48 questions and 4,042 participants responded. Participants were not required to answer all questions before submitting the survey. When grouped by age, nearly half (49%) of the responses were from people who were aged 25 to 34 years old. 24% were aged 35 to 44 years old. The distribution of ages is skewed to the left with very few (0.5%) under 18 years old. 31 participants did not include their age in the survey so they were excluded from the final data set. Other exclusions in the final plots included the under 18 category due to the low frequency of responses and those who did not respond to all of the questions of interest including rating coffee A, B, C, and D for bitterness, acidity, personal preference, and overall preference. This left a sample size of 3,697 for final analysis.
+The survey had 48 questions and 4,042 participants responded. Participants were not required to answer all questions before submitting the survey. When grouped by age, nearly half (49%) of the responses were from people who were aged 25 to 34 years old. 24% were aged 35 to 44 years old. The distribution of ages is skewed to the right with very few (0.5%) under 18 years old. 31 participants did not include their age in the survey so they were excluded from the final data set. Other exclusions in the final plots included the under 18 category due to the low frequency of responses and those who did not respond to all of the questions of interest including rating coffee A, B, C, and D for bitterness, acidity, personal preference, and overall preference. This left a sample size of 3,697 for final analysis.
 
-```{r}
+```{r group data}
 coffee_survey |>
   group_by(age) |>
   summarize(Freq = n()) 
@@ -163,7 +151,7 @@ coffee_survey |>
   
 ```
 
-```{r}
+```{r create coffee-survey-preference}
 
 coffee_survey_preference <- coffee_survey |>
   select(submission_id, age, coffee_a_acidity, coffee_a_bitterness, coffee_a_personal_preference, coffee_b_acidity, coffee_b_bitterness, coffee_b_personal_preference, coffee_c_acidity, coffee_c_bitterness, coffee_c_personal_preference, coffee_d_acidity, coffee_d_bitterness, coffee_d_personal_preference, prefer_overall)|>
@@ -180,7 +168,7 @@ glimpse(coffee_survey_preference)
 
 ```
 
-```{r , fig.width = 10}
+```{r age with excluded values, fig.width = 10}
 
 coffee_survey_preference |>
   ggplot(aes(x = fct_relevel(age, c("18-24 years old", "25-34 years old", "35-44 years old", "45-54 years old", "55-64 years old", ">65 years old")))) +
@@ -190,15 +178,15 @@ coffee_survey_preference |>
        title = "Ages of Coffee Survey Participants after Excluding NA Values and Particpants Under 18")
 ```
 
-After the dataset was cleaned up and groups were excluded based on the criteria above, summary statistics on the remaining responses showed that Coffee D was the overall favorite choice at 37%. Coffees A (22%), B (21%), and C (21%) all scored very similarly to each other. Summary stats for the responses of interest regarding coffee acidity, bitterness, and personal preference revealed that
+After the dataset was cleaned up and groups were excluded based on the criteria above, summary statistics on the remaining responses showed that Coffee D was the overall favorite choice at 37%. Coffees A (22%), B (21%), and C (21%) all scored very similarly to each other. The variables chosen for analysis were ratings of acidity, bitterness, and personal preference for each coffee as well as age and over preference of the four coffee samples.
 
-```{r}
+```{r overall preference table}
 
 prop.table(table(coffee_survey_preference$prefer_overall))
 
 ```
 
-```{r}
+```{r overall preference graph}
 
 coffee_survey_preference |>
   ggplot(aes(x = prefer_overall)) +
@@ -209,7 +197,27 @@ coffee_survey_preference |>
 
 ```
 
-```{r}
+```{r pivot longer}
+
+coffee_survey_preference <- coffee_survey |>
+  select(submission_id, age, coffee_a_acidity, coffee_a_bitterness, coffee_a_personal_preference, coffee_b_acidity, coffee_b_bitterness, coffee_b_personal_preference, coffee_c_acidity, coffee_c_bitterness, coffee_c_personal_preference, coffee_d_acidity, coffee_d_bitterness, coffee_d_personal_preference, prefer_overall)|>
+  na.omit() |>
+  filter(age != "<18 years old")
+
+longer_coffee_survey_preference <- coffee_survey_preference |>
+  pivot_longer(
+    cols = c(coffee_a_acidity, coffee_a_bitterness, coffee_a_personal_preference, coffee_b_acidity, coffee_b_bitterness, coffee_b_personal_preference, coffee_c_acidity, coffee_c_bitterness, coffee_c_personal_preference, coffee_d_acidity, coffee_d_bitterness, coffee_d_personal_preference),
+    names_to = "explanatory",
+    values_to = "explanatory_value"
+  )
+
+longer_coffee_survey_preference$coffee_type <- rep(c("A", "A", "A", "B", "B", "B", "C", "C", "C", "D", "D", "D"), times = 3690)
+
+longer_coffee_survey_preference$explanatory_type <- rep(c("Acidity", "Bitterness", "Personal Preference"), times = 14760)
+
+```
+
+```{r summary of coffee-preference}
 summary_coffee_survey_preference <- coffee_survey_preference |>
   summary()
 
@@ -220,11 +228,15 @@ print(summary_coffee_survey_preference)
 
 ## Introduction
 
+This project examined trends in ratings of acidity, bitterness, personal preference, and overall preferece based on age. This question was chosen as older people have different taste perception than younger people, particularly when it comes to bitterness. My hypothesis is that younger people will rate acidity and bitterness higher than older people for the same coffees and younger people will prefer the coffees that they rated as having lower acidity and bitterness.
+
 ## Approach
+
+I first tidied the data set to exclude NA values for my variables of interest which were age, overall preference, and ratings of acidity, bitterness, and personal preference. I summarized the data for each of my response variables and made a histogram to see the sample size for each age group. I chose to make a proportional bar chart with age, overall preference, and coffee type for my first visualization to explore which coffee types each age group chose as their favorite. I chose a proportional instead of a regular bar chart because of the varying sample sizes for each age group shown in the bar graphs above. I wanted it to be easy to compare across groups regardless of this difference. For my second visualization, I chose a stacked bar graph with the variables of age and coffee type which were facet wrapped to show these variables for acidity, bitterness, and personal preference. This made it possible to compare ratings for each question across age groups for each coffee type.
 
 ## Analysis
 
-```{r}
+```{r pivot cofee-survey-preference}
 
 longer_coffee_survey_preference <- coffee_survey_preference |>
   pivot_longer(
@@ -260,7 +272,9 @@ coffee_survey_preference |>
   scale_fill_brewer()
 ```
 
-```{r, fig.width = 10, fig.height = 5}
+When responses were sorted by age, younger people under 54 years old most preferred coffee D while those who were 55 64 preferred coffee C and those greater than 65 preferred coffee B.
+
+```{r stacked bar graph, fig.width = 10, fig.height = 5}
 longer_coffee_survey_preference|>
   mutate(age =  fct_relevel(age, c("18-24 years old", "25-34 years old", "35-44 years old", "45-54 years old", "55-64 years old", ">65 years old"))) |>
   group_by(age, coffee_type, explanatory_type) |> 
@@ -278,10 +292,8 @@ longer_coffee_survey_preference|>
   scale_fill_brewer()
 ```
 
+When responses to acidity, bitterness, and personal preference ratings were compared across age groups for each coffee, younger groups rated acidity higher for coffees A and D than older age groups. Coffees B and C had similar bitterness ratings across all age groups. Ratings for bitterness were rated higher for younger age groups than older for coffees B and C while D had the opposite trend. Coffee A had similar ratings for acidity for all age groups. Personal preference ratings were even across all age groups, except for coffee D where younger people preferred it than older groups.
+
 ## Discussion
 
--   Coffee D had the highest rating for coffee choice overall. When broken down by age group, coffee D was most popular among younger age groups including 18 - 24, 25 - 34, and 35 - 44, and 45 - 54 year olds. Coffee C was most popular at 28.3% for 55-64 year olds and coffee D was most popular at 28% for the greater than 65 age group.
-
--   Younger people preferred coffee D while older people had an even split between all 4.
-
--   Acidity and bitterness were generally rated higher amongst younger age groups.
+Overall, both ratings of personal preference and overall preference showed that coffee D was popular among younger people compared to older people. I originally hypothesized that younger people will prefer a coffee with low acidity and bitterness. I was intrigued to find that coffee D has the lowest rating of bitterness among younger age groups, however it had the highest ranking of acidity for each age group. Those aged 55 to 64 most preferred coffee C, but just barely, while those over 65 preferred coffee B the most. Both coffee B and C had higher bitterness ratings and lower acidity ratings across all age groups. This observation aligns with my hypothesis. While this data set can be used to make observations about trends, it cannot be used for correlation between variables as the people who participated were not randomly chosen for this experiment. If this survey were to be repeated, participants should be chosen at random, but with even sample sizes across age groups so that responses can be compared across age.
