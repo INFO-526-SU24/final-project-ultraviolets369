@@ -135,7 +135,8 @@ The survey had 48 questions and 4,042 participants responded. Participants were 
 dim(coffee_survey)
 ```
 
-When grouped by age, nearly half (49%) of the responses were from people who were aged 25 to 34 years old. 24% were aged 35 to 44 years old. The distribution of ages is skewed to the left with very few (0.5%) under 18 years old. 
+When grouped by age, nearly half (49%) of the responses were from people who were aged 25 to 34 years old. 24% were aged 35 to 44 years old. The distribution of ages is skewed to the left with very few (0.5%) under 18 years old.
+
 ```{r}
 coffee_survey |>
   group_by(age) |>
@@ -159,7 +160,6 @@ coffee_survey |>
   
 ```
 
-
 ## Question
 
 How did bitterness, acidity, and personal preference vary for each coffee sample according to the age of participants?
@@ -169,7 +169,7 @@ How did bitterness, acidity, and personal preference vary for each coffee sample
 -   The first visualization will examine the impact of age on coffee preference. This will be a stacked proportional bar chart with age on the y-axis and frequency on the x-axis. The stacked bars will each correspond to one of the four coffee samples.
 -   The second visualization will show how each age group rated the acidity and bitterness of each of the four coffee samples. This will be a grouped bar chart with age on the y-axis and frequency on the x-axis. Each bar in the groups will correspond to one of the four coffee samples. This will be facet-wrapped by the explantory variable so it is easy to compare the mean of each response between age groups.
     -   An issue that will be need to be addressed is that the number of responses for each question varies as participants did not answer every question on the survey. The number of participants for each variable will need to be determined and participants may need to be removed if they did not answer questions related to the four variables of age, bitterness, acidity, and overall preference.
-    -   Some age groups also got considerably less responses than other groups such as the <18 years old group. This group may be excluded in the final analysis.
+    -   Some age groups also got considerably less responses than other groups such as the \<18 years old group. This group may be excluded in the final analysis.
 
 ## Task Checker
 
@@ -186,11 +186,11 @@ How did bitterness, acidity, and personal preference vary for each coffee sample
 +----------------+-------------+---------+----------+---------------------------------------------------------------------+
 | Final Proposal | Done        | 6/10/24 | Medium   | Make adjustments from feedback                                      |
 +----------------+-------------+---------+----------+---------------------------------------------------------------------+
-| Tidy Data      | In progress | 6/10/24 | Medium   | Check n for each variable                                           |
+| Tidy Data      | Done        | 6/10/24 | Medium   | Check n for each variable                                           |
 |                |             |         |          |                                                                     |
 |                |             |         |          | Remove participants that did not answer all 4 questions of interest |
 +----------------+-------------+---------+----------+---------------------------------------------------------------------+
-| Create Graphs  | In progress | 6/17/24 | Medium   | Create all graphs and place into slides                             |
+| Create Graphs  | Done        | 6/17/24 | Medium   | Create all graphs and place into slides                             |
 +----------------+-------------+---------+----------+---------------------------------------------------------------------+
 | Presentation   | Not started | 6/24/24 | High     | Create final presentation video.                                    |
 +----------------+-------------+---------+----------+---------------------------------------------------------------------+

@@ -21,8 +21,32 @@ execute:
 #| include: false
 
 # Load packages here
-pacman::p_load(tidymodels,
-               tidyverse)
+pacman::p_load(tidyverse, 
+               glue, 
+               tidymodels,
+               scales,
+               ggthemes,
+               forcats,
+               rsconnect,
+               shiny,
+               jpeg,
+               ggpubr,
+               png,
+               gt,
+               dplyr,
+               viridis,
+               patchwork,
+               here,
+               ggridges,
+               colorspace,
+               stringr,
+               ggstats,
+               dsbox,
+               janitor,
+               openintro,
+               ggrepel,
+               patchwork,
+               readr)
 
 ```
 
@@ -42,124 +66,186 @@ knitr::opts_chunk$set(
   )
 ```
 
-```{r}
-#| label: load-data
-#| include: false
-# Load data here
-data(mtcars)
-mtcars$speed <- mtcars$hp / mtcars$wt
+```{r load coff_survey dataset}
+#| label: load-dataset-coffee_survey
+#| #load data from coffee_survey csv file
 
-data("penguins")
-```
 
-# Using Quarto for presentations
+locale=locale(encoding="latin1") #https://stackoverflow.com/questions/71532975/trying-to-read-csv-file-says-error-in-ncharx-width-invalid-multibyte-s
 
-## Quarto
-
--   The presentation is created using the Quarto CLI
-
--   `##` sets the start of a new slide
-
-## Layouts
-
-You can use plain text
-
-::: columns
-::: {.column width="40%"}
--   or bullet points[^1]
-:::
-
-::: {.column width="60%"}
-or in two columns
-:::
-:::
-
-[^1]: And add footnotes
-
--   like
-
--   this
-
-## Code
-
-```{r, echo=FALSE}
-model <- lm(mpg ~ speed, data = mtcars) 
-
-model |> tidy()
-
-model |> glance()
+coffee_survey_raw <- read_csv(here::here("data/coffee_survey.csv"), locale = readr::locale(encoding = "latin1"))
 
 ```
-
-## Plots
 
 ```{r}
-penguins |>
-  mutate(species = ifelse(species == "Adelie", "Adelie", "Other")) |>
-  ggplot(aes(x = flipper_length_mm, y = body_mass_g, color = species)) +
-  geom_point()
+coffee_survey <- coffee_survey_raw |> 
+  janitor::clean_names() |> 
+  # Get rid of one-hot encoding; users can do that if they'd like. Also,
+  # "flavorings" columns are empty.
+  dplyr::select(
+    submission_id,
+    age = what_is_your_age,
+    cups = how_many_cups_of_coffee_do_you_typically_drink_per_day,
+    where_drink = where_do_you_typically_drink_coffee,
+    brew = how_do_you_brew_coffee_at_home,
+    brew_other = how_else_do_you_brew_coffee_at_home,
+    purchase = on_the_go_where_do_you_typically_purchase_coffee,
+    purchase_other = where_else_do_you_purchase_coffee,
+    favorite = what_is_your_favorite_coffee_drink,
+    favorite_specify = please_specify_what_your_favorite_coffee_drink_is,
+    additions = do_you_usually_add_anything_to_your_coffee,
+    additions_other = what_else_do_you_add_to_your_coffee,
+    dairy = what_kind_of_dairy_do_you_add,
+    sweetener = what_kind_of_sugar_or_sweetener_do_you_add,
+    style = before_todays_tasting_which_of_the_following_best_described_what_kind_of_coffee_you_like,
+    strength = how_strong_do_you_like_your_coffee,
+    roast_level = what_roast_level_of_coffee_do_you_prefer,
+    caffeine = how_much_caffeine_do_you_like_in_your_coffee,
+    expertise = lastly_how_would_you_rate_your_own_coffee_expertise,
+    starts_with("coffee"),
+    prefer_abc = between_coffee_a_coffee_b_and_coffee_c_which_did_you_prefer,
+    prefer_ad = between_coffee_a_and_coffee_d_which_did_you_prefer,
+    prefer_overall = lastly_what_was_your_favorite_overall_coffee,
+    wfh = do_you_work_from_home_or_in_person,
+    total_spend = in_total_much_money_do_you_typically_spend_on_coffee_in_a_month,
+    why_drink = why_do_you_drink_coffee,
+    why_drink_other = other_reason_for_drinking_coffee,
+    taste = do_you_like_the_taste_of_coffee,
+    know_source = do_you_know_where_your_coffee_comes_from,
+    most_paid = what_is_the_most_youve_ever_paid_for_a_cup_of_coffee,
+    most_willing = what_is_the_most_youd_ever_be_willing_to_pay_for_a_cup_of_coffee,
+    value_cafe = do_you_feel_like_you_re_getting_good_value_for_your_money_when_you_buy_coffee_at_a_cafe,
+    spent_equipment = approximately_how_much_have_you_spent_on_coffee_equipment_in_the_past_5_years,
+    value_equipment = do_you_feel_like_you_re_getting_good_value_for_your_money_with_regards_to_your_coffee_equipment,
+    gender,
+    gender_specify = gender_please_specify,
+    education_level,
+    ethnicity_race,
+    ethnicity_race_specify = ethnicity_race_please_specify,
+    employment_status,
+    number_children = number_of_children,
+    political_affiliation
+  )
 ```
-
-## Plot and text
-
-::: columns
-::: {.column width="50%"}
--   Some text
-
--   goes here
-:::
-
-::: {.column width="50%"}
-```{r, warning=FALSE, fig.width=5.5}
-penguins |>
-  ggplot(aes(x = bill_length_mm, y = species, color = species)) +
-  geom_boxplot(linewidth = 0.75,
-               outlier.size = 2.5) +
-  theme_minimal(base_size = 15) +
-  theme(legend.key.size = unit(0.8, "cm"))
-```
-:::
-:::
-
-# A new section...
-
-## Tables
-
-If you want to generate a table, make sure it is in the HTML format (instead of Markdown or other formats), e.g.,
 
 ```{r}
-penguins |> 
-  head() |>
-  kableExtra::kable() |>
-  kableExtra::kable_styling()
+
+coffee_survey_preference <- coffee_survey |>
+  select(submission_id, age, coffee_a_acidity, coffee_a_bitterness, coffee_a_personal_preference, coffee_b_acidity, coffee_b_bitterness, coffee_b_personal_preference, coffee_c_acidity, coffee_c_bitterness, coffee_c_personal_preference, coffee_d_acidity, coffee_d_bitterness, coffee_d_personal_preference, prefer_overall)|>
+  na.omit() |>
+  filter(age != "<18 years old")
+
+longer_coffee_survey_preference <- coffee_survey_preference |>
+  pivot_longer(
+    cols = c(coffee_a_acidity, coffee_a_bitterness, coffee_a_personal_preference, coffee_b_acidity, coffee_b_bitterness, coffee_b_personal_preference, coffee_c_acidity, coffee_c_bitterness, coffee_c_personal_preference, coffee_d_acidity, coffee_d_bitterness, coffee_d_personal_preference),
+    names_to = "explanatory",
+    values_to = "explanatory_value"
+  )
+
+longer_coffee_survey_preference$coffee_type <- rep(c("A", "A", "A", "B", "B", "B", "C", "C", "C", "D", "D", "D"), times = 3690)
+
+longer_coffee_survey_preference$explanatory_type <- rep(c("Acidity", "Bitterness", "Personal Preference"), times = 14760)
 ```
 
-## Images
+## Introduction
 
-![Image credit: Danielle Navarro, Percolate.](images/watercolour_sys02_img34_teacup-ocean.png){fig-align="center" width="500"}
+-   Survey on a coffee taste test hosted by James Hoffman and Cometeer.
 
-## Math Expressions {.smaller}
+-   4 coffee samples sent to 4,042 Americans. Samples included a light, medium, and dark roast Kenyan coffee and a Columbian coffee.
 
-You can write LaTeX math expressions inside a pair of dollar signs, e.g. \$\\alpha+\\beta\$ renders $\alpha + \beta$. You can use the display style with double dollar signs:
+-   48 questions: favorite sample, what their regular preference is, and what they typically spend on a cup of coffee.
 
-```         
-$$\bar{X}=\frac{1}{n}\sum_{i=1}^nX_i$$
+## Exploring the Data
+
+```{r , fig.width = 10}
+
+coffee_survey |>
+  filter(!is.na(age)) |>
+  ggplot(aes(x = fct_relevel(age, c("<18 years old", "18-24 years old", "25-34 years old", "35-44 years old", "45-54 years old", "55-64 years old", ">65 years old")))) +
+  geom_bar(fill = "brown") +
+  labs(x = "Age",
+       y = "Frequency",
+       title = "Ages of Coffee Survey Participants")
 ```
 
-$$
-\bar{X}=\frac{1}{n}\sum_{i=1}^nX_i
-$$
+## Excluded Data
 
-Limitations:
+```{r , fig.width = 10}
 
-1.  The source code of a LaTeX math expression must be in one line, unless it is inside a pair of double dollar signs, in which case the starting `$$` must appear in the very beginning of a line, followed immediately by a non-space character, and the ending `$$` must be at the end of a line, led by a non-space character;
+coffee_survey_preference |>
+  ggplot(aes(x = fct_relevel(age, c("18-24 years old", "25-34 years old", "35-44 years old", "45-54 years old", "55-64 years old", ">65 years old")))) +
+  geom_bar(fill = "brown") +
+  labs(x = "Age",
+       y = "Frequency",
+       title = "Ages of Coffee Survey Participants after Excluding NA Values 
+and Particpants Under 18")
+```
 
-2.  There should not be spaces after the opening `$` or before the closing `$`.
+## Coffee Preference
 
-# Wrap up
+```{r}
 
-## Feeling adventurous?
+coffee_survey_preference |>
+  ggplot(aes(x = prefer_overall)) +
+  geom_bar(fill = "brown") +
+  labs(x = "Coffee Type",
+       y = "Frequency",
+       )
 
--   You are welcomed to use the default styling of the slides. In fact, that's what I expect majority of you will do. You will differentiate yourself with the content of your presentation.
+```
 
--   But some of you might want to play around with slide styling. Some solutions for this can be found at https://quarto.org/docs/presentations/revealjs.
+## Question
+
+**How did bitterness, acidity, and personal preference vary for each coffee sample according to the age of participants?**
+
+## Analaysis
+
+```{r prop bar chart, fig.width = 10}
+
+coffee_survey_preference |>
+  mutate(age =  fct_relevel(age, c("18-24 years old", "25-34 years old", "35-44 years old", "45-54 years old", "55-64 years old", ">65 years old"))) |>
+  group_by(age, prefer_overall) |>
+  summarise(n = n()) |>
+  mutate(freq = n / sum(n)) |>
+  ggplot(aes(x = age, weight = freq, fill = prefer_overall, by = age)) +
+  scale_y_continuous(labels = scales::percent) +
+  geom_bar(position = "fill", color = "black") +
+  labs(x = "Age", 
+       y = "Proportion", 
+       title = "Overall Coffee Preference by Age",
+       fill = "Coffee Type",
+       caption = "Source: The Great American Coffee Taste Test by James Hoffman and Cometeer"
+  ) +
+  geom_text(stat = "prop", position = position_fill(.5)) +
+  scale_fill_brewer()
+```
+
+## Analysis
+
+```{r, fig.width = 10, fig.height = 5}
+longer_coffee_survey_preference|>
+  mutate(age =  fct_relevel(age, c("18-24 years old", "25-34 years old", "35-44 years old", "45-54 years old", "55-64 years old", ">65 years old"))) |>
+  group_by(age, coffee_type, explanatory_type) |> 
+  mutate(avg_score = ave(explanatory_value), sd_score = sd(explanatory_value)) |>
+  ggplot(aes(fill = factor(age), x = coffee_type, y = avg_score)) +
+  geom_bar(position = position_dodge(), stat = "identity", color = "black", width = 1) + 
+  geom_errorbar(aes(ymin = avg_score - sd_score, ymax = avg_score + sd_score), width = 0.2, position = position_dodge(1)) + 
+  facet_wrap(~explanatory_type) + 
+  labs( x = "Coffee Type", 
+        y = "Average Score",
+        fill = "Age",
+        title = "Average Scores for Four Types of Coffee",
+        caption = "Source: The Great American Coffee Taste Test by James Hoffman and Cometeer"
+  ) +
+  scale_fill_brewer()
+```
+
+## Discussion
+
+-   Coffee D had the highest rating for coffee choice overall.
+
+-   Younger people preferred coffee D while older people had an even split between all 4.
+
+-   Acidity and bitterness were generally rated higher amongst younger age groups.
+
+Presentation Link: <https://arizona.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=fbbea7dc-0721-4368-ab95-b1990105eddf>

@@ -53,6 +53,71 @@ pacman::p_load(tidyverse,
 ggplot2::theme_set(ggplot2::theme_minimal(base_size = 14))
 ```
 
+```{r load coff_survey dataset}
+#| label: load-dataset-coffee_survey
+#| #load data from coffee_survey csv file
+
+
+locale=locale(encoding="latin1") #https://stackoverflow.com/questions/71532975/trying-to-read-csv-file-says-error-in-ncharx-width-invalid-multibyte-s
+
+coffee_survey_raw <- read_csv(here::here("data/coffee_survey.csv"), locale = readr::locale(encoding = "latin1"))
+
+```
+
+```{r tidy column names}
+
+
+coffee_survey <- coffee_survey_raw |> 
+  janitor::clean_names() |> 
+  # Get rid of one-hot encoding; users can do that if they'd like. Also,
+  # "flavorings" columns are empty.
+  dplyr::select(
+    submission_id,
+    age = what_is_your_age,
+    cups = how_many_cups_of_coffee_do_you_typically_drink_per_day,
+    where_drink = where_do_you_typically_drink_coffee,
+    brew = how_do_you_brew_coffee_at_home,
+    brew_other = how_else_do_you_brew_coffee_at_home,
+    purchase = on_the_go_where_do_you_typically_purchase_coffee,
+    purchase_other = where_else_do_you_purchase_coffee,
+    favorite = what_is_your_favorite_coffee_drink,
+    favorite_specify = please_specify_what_your_favorite_coffee_drink_is,
+    additions = do_you_usually_add_anything_to_your_coffee,
+    additions_other = what_else_do_you_add_to_your_coffee,
+    dairy = what_kind_of_dairy_do_you_add,
+    sweetener = what_kind_of_sugar_or_sweetener_do_you_add,
+    style = before_todays_tasting_which_of_the_following_best_described_what_kind_of_coffee_you_like,
+    strength = how_strong_do_you_like_your_coffee,
+    roast_level = what_roast_level_of_coffee_do_you_prefer,
+    caffeine = how_much_caffeine_do_you_like_in_your_coffee,
+    expertise = lastly_how_would_you_rate_your_own_coffee_expertise,
+    starts_with("coffee"),
+    prefer_abc = between_coffee_a_coffee_b_and_coffee_c_which_did_you_prefer,
+    prefer_ad = between_coffee_a_and_coffee_d_which_did_you_prefer,
+    prefer_overall = lastly_what_was_your_favorite_overall_coffee,
+    wfh = do_you_work_from_home_or_in_person,
+    total_spend = in_total_much_money_do_you_typically_spend_on_coffee_in_a_month,
+    why_drink = why_do_you_drink_coffee,
+    why_drink_other = other_reason_for_drinking_coffee,
+    taste = do_you_like_the_taste_of_coffee,
+    know_source = do_you_know_where_your_coffee_comes_from,
+    most_paid = what_is_the_most_youve_ever_paid_for_a_cup_of_coffee,
+    most_willing = what_is_the_most_youd_ever_be_willing_to_pay_for_a_cup_of_coffee,
+    value_cafe = do_you_feel_like_you_re_getting_good_value_for_your_money_when_you_buy_coffee_at_a_cafe,
+    spent_equipment = approximately_how_much_have_you_spent_on_coffee_equipment_in_the_past_5_years,
+    value_equipment = do_you_feel_like_you_re_getting_good_value_for_your_money_with_regards_to_your_coffee_equipment,
+    gender,
+    gender_specify = gender_please_specify,
+    education_level,
+    ethnicity_race,
+    ethnicity_race_specify = ethnicity_race_please_specify,
+    employment_status,
+    number_children = number_of_children,
+    political_affiliation
+  )
+
+```
+
 ## Goals
 
 -   Introduction: The introduction provides a clear explanation of the question and the dataset used to answer the question, including a description of all relevant variables in the dataset. (3 points)
@@ -67,9 +132,13 @@ ggplot2::theme_set(ggplot2::theme_minimal(base_size = 14))
 
 ## Abstract
 
+The Great American Coffee Taste Test was conducted in 2023 by James Hoffman and Cometeer, a coffee company. They sent out 4 frozen capsules of coffee which included a light, medium, and dark roast Kenyan coffee along with a Columbian coffee. Participants were asked to prepare each sample and answer a 48 question survey about their coffee preference along with demographic questions such as race, political party, age, and income. The data for this project included 4,042 response from this survey. This project examined the effect of age on questions which asked participants to rate the acidity, bitterness, and preference for each of the four coffees. It also examined the effect of age on overall preference.
+
+The data was tidied by renaming columns, removing age bins that had under 20 responses, and removing NA values for the variables of interest which left a sample size of 3,697. From analyzing the data, it was clear that coffee D was chosen as most preferred out of the four coffees at 37%. From looking at the distribution of age, 50% of responses came from people who were 25 to 34 years old and the data was skewed to the right. When responses were sorted by age, younger people under 54 years old most preferred coffee D while those who were 55 64 preferred coffee C and those greater than 65 preferred coffee B.
+
 ## Introduction
 
-This data set was created from a partnership between James Hoffman and Cometeer. They sent four coffee samples to over 4,000 Americans and asked them to fill out this survey which asked them which coffee they liked the best from the samples, what their regular preference is, and what they typically spend on a cup of coffee. I chose this data set as it includes many possible variables to analyze, including demographics for respondents. The original survey can be viewed [here.](https://cometeer.com/pages/the-great-american-coffee-taste-test?utm_source=google&utm_medium=paid-search&utm_campaign=PMax%7CBrand%7CUS&utm_term=&utm_content=&gad_source=1&gclid=Cj0KCQjwmMayBhDuARIsAM9HM8cGTK7xXEIM7blKzNjvdJvSO3naRo3OW4lFtnvNYls0c46kFHsUQ_AaAoEREALw_wcB) The variables of interest are participants rating of the acidity, bitterness, and preference for the four sampled coffees as well as overall preference. What were each kind of coffee used.
+This data set was created from a partnership between James Hoffman and Cometeer. They sent four coffee samples to over 4,000 Americans and asked them to fill out this survey which asked them which coffee they liked the best from the samples, what their regular preference is, and what they typically spend on a cup of coffee along with demographic information. The original survey can be viewed [here.](https://cometeer.com/pages/the-great-american-coffee-taste-test?utm_source=google&utm_medium=paid-search&utm_campaign=PMax%7CBrand%7CUS&utm_term=&utm_content=&gad_source=1&gclid=Cj0KCQjwmMayBhDuARIsAM9HM8cGTK7xXEIM7blKzNjvdJvSO3naRo3OW4lFtnvNYls0c46kFHsUQ_AaAoEREALw_wcB) The variables of interest are participants rating of the acidity, bitterness, and preference for the four sampled coffees as well as overall preference. The four coffees chosen were a light, medium, and dark roast Kenyan coffee as well as a Columbian coffee.
 
 The survey had 48 questions and 4,042 participants responded. Participants were not required to answer all questions before submitting the survey. When grouped by age, nearly half (49%) of the responses were from people who were aged 25 to 34 years old. 24% were aged 35 to 44 years old. The distribution of ages is skewed to the left with very few (0.5%) under 18 years old. 31 participants did not include their age in the survey so they were excluded from the final data set. Other exclusions in the final plots included the under 18 category due to the low frequency of responses and those who did not respond to all of the questions of interest including rating coffee A, B, C, and D for bitterness, acidity, personal preference, and overall preference. This left a sample size of 3,697 for final analysis.
 
@@ -134,7 +203,7 @@ prop.table(table(coffee_survey_preference$prefer_overall))
 coffee_survey_preference |>
   ggplot(aes(x = prefer_overall)) +
   geom_bar(fill = "brown") +
-  labs(x = "Coffee Preference",
+  labs(x = "Coffee Type",
        y = "Frequency",
        title = "Overall Coffee Preference")
 
@@ -171,24 +240,6 @@ longer_coffee_survey_preference$explanatory_type <- rep(c("Acidity", "Bitterness
 glimpse(longer_coffee_survey_preference)
 ```
 
-```{r, fig.width = 10, fig.height = 5}
-longer_coffee_survey_preference|>
-  mutate(age =  fct_relevel(age, c("18-24 years old", "25-34 years old", "35-44 years old", "45-54 years old", "55-64 years old", ">65 years old"))) |>
-  group_by(age, coffee_type, explanatory_type) |> 
-  mutate(avg_score = ave(explanatory_value), sd_score = sd(explanatory_value)) |>
-  ggplot(aes(fill = factor(age), x = coffee_type, y = avg_score)) +
-  geom_bar(position = position_dodge(), stat = "identity", color = "black", width = 1) + 
-  geom_errorbar(aes(ymin = avg_score - sd_score, ymax = avg_score + sd_score), width = 0.2, position = position_dodge(1)) + 
-  facet_wrap(~explanatory_type) + 
-  labs( x = "Coffee Type", 
-        y = "Average Score",
-        fill = "Age",
-        title = "Average Scores for Four Types of Coffee",
-        caption = "Source: The Great American Coffee Taste Test by James Hoffman and Cometeer"
-  ) +
-  scale_fill_brewer()
-```
-
 ```{r prop bar chart, fig.width = 10}
 
 coffee_survey_preference |>
@@ -209,4 +260,28 @@ coffee_survey_preference |>
   scale_fill_brewer()
 ```
 
+```{r, fig.width = 10, fig.height = 5}
+longer_coffee_survey_preference|>
+  mutate(age =  fct_relevel(age, c("18-24 years old", "25-34 years old", "35-44 years old", "45-54 years old", "55-64 years old", ">65 years old"))) |>
+  group_by(age, coffee_type, explanatory_type) |> 
+  mutate(avg_score = ave(explanatory_value), sd_score = sd(explanatory_value)) |>
+  ggplot(aes(fill = factor(age), x = coffee_type, y = avg_score)) +
+  geom_bar(position = position_dodge(), stat = "identity", color = "black", width = 1) + 
+  geom_errorbar(aes(ymin = avg_score - sd_score, ymax = avg_score + sd_score), width = 0.2, position = position_dodge(1)) + 
+  facet_wrap(~explanatory_type) + 
+  labs( x = "Coffee Type", 
+        y = "Average Score",
+        fill = "Age",
+        title = "Average Scores for Four Types of Coffee",
+        caption = "Source: The Great American Coffee Taste Test by James Hoffman and Cometeer"
+  ) +
+  scale_fill_brewer()
+```
+
 ## Discussion
+
+-   Coffee D had the highest rating for coffee choice overall. When broken down by age group, coffee D was most popular among younger age groups including 18 - 24, 25 - 34, and 35 - 44, and 45 - 54 year olds. Coffee C was most popular at 28.3% for 55-64 year olds and coffee D was most popular at 28% for the greater than 65 age group.
+
+-   Younger people preferred coffee D while older people had an even split between all 4.
+
+-   Acidity and bitterness were generally rated higher amongst younger age groups.
