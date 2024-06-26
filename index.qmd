@@ -245,7 +245,6 @@ longer_coffee_survey_preference$coffee_type <- rep(c("A", "A", "A", "B", "B", "B
 
 longer_coffee_survey_preference$explanatory_type <- rep(c("Acidity", "Bitterness", "Personal Preference"), times = 14760)
 
-glimpse(longer_coffee_survey_preference)
 ```
 
 ```{r prop bar chart, fig.width = 10}
